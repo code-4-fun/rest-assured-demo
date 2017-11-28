@@ -1,0 +1,5 @@
+
+.gradle/
+build/
+rest-assured-demo.ipr
+rest-assured-demo.iws

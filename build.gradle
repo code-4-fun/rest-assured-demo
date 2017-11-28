@@ -1,0 +1,54 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.8.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'com.example.api.integration.tests'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    if (project.hasProperty('testMode') && project.property("testMode") == "integration") {
+        testCompile 'io.rest-assured:rest-assured:3.0.6'
+    }
+
+}
+
+setupTestMode()
+
+def setupTestMode() {
+    def defaultTestMode = 'junit'
+    def testMode = hasProperty('testMode') ? testMode : defaultTestMode
+    project.ext.testMode = testMode
+
+    println "Test mode configured as $testMode"
+}
+
+test {
+    filter {
+        if (project.property('testMode') == "integration") {
+            includeTestsMatching "com.example.api.integration.tests.restassureddemo.integration.*"
+        } else {
+            includeTestsMatching "com.example.api.integration.tests.restassureddemo.junit.*"
+        }
+    }
+}
